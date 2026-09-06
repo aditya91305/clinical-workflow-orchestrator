@@ -6,7 +6,7 @@ The system enforces strict medical identifier validation, schema normalization, 
 
 ---
 
-## 🏛 System Architecture
+## System Architecture
 
 ```text
 [ External Clinical EMR / Webhook Trigger ]
