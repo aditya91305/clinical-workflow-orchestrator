@@ -1,0 +1,159 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "clinical-report-ingest",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "1e7ad53e-b10d-4322-a223-078f8afb49a4",
+      "name": "Webhook",
+      "webhookId": "abb4aaae-01b0-45a9-9c43-facf5813573b"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json.body;\n\nreturn [{\n  json: {\n    trial_id: input.raw_trial ? input.raw_trial.trim().toUpperCase() : '',\n    patient_id: input.raw_patient ? input.raw_patient.trim().toUpperCase() : '',\n    status: input.status ? input.status.trim().toUpperCase() : 'PENDING',\n    findings: input.notes ? input.notes.trim() : ''\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "31e7cb31-96a6-4a3c-b8c7-3f87292270e5",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:5000/api/reports",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        448,
+        0
+      ],
+      "id": "670bd0c5-d089-4e98-9713-2b09f0f9acbe",
+      "name": "HTTP Request",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "a9b08c1a-2898-410d-9555-f5ccccc27407",
+              "leftValue": "={{ $json.statusCode || 200 }}",
+              "rightValue": 300,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        672,
+        0
+      ],
+      "id": "33414da0-d4b4-4835-a9cd-5fc756d4dc25",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "jsCode": "const errorData = $input.first().json;\nreturn [{\n  json: {\n    alert: \"CLINICAL_VALIDATION_REJECTED\",\n    timestamp: new Date().toISOString(),\n    flask_error: errorData.error || \"Validation Failed\",\n    details: errorData.details || \"Rejected by business rules\"\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        784,
+        96
+      ],
+      "id": "974716d0-22f7-42bb-a418-dc4d15f748cc",
+      "name": "Log Audit Failure"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Log Audit Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "78895e70-bee8-4ee4-9460-543fd674c127",
+  "meta": {
+    "instanceId": "61fa2c6ac888d5d9f2c41949270d74e23a4c2ee768fcb421bc49b116b378f79a"
+  },
+  "nodeGroups": [],
+  "id": "vTtjLryWIVkzvRYo",
+  "tags": []
+}

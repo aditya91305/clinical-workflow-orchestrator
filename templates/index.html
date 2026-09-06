@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clinical Trial Hub</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: #f2f1ed;
+      color: #1a1a1a;
+      padding: 40px 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 860px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Header Section */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 4px;
+    }
+
+    .header h1 {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .header p {
+      font-size: 14px;
+      color: #7d7a75;
+      margin-top: 2px;
+    }
+
+    .badge-pill {
+      background: #ff5e1e;
+      color: white;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 20px;
+      letter-spacing: 0.3px;
+    }
+
+    /* Top Metric Cards */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03);
+    }
+
+    .card-label {
+      font-size: 13px;
+      color: #8c8881;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .card-value {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: #1a1a1a;
+    }
+
+    /* Simulation Form Card */
+    .form-card {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .form-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    input, select {
+      flex: 1;
+      min-width: 140px;
+      background: #f7f6f2;
+      border: 1px solid #ebe8e1;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #222;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, select:focus {
+      border-color: #ff5e1e;
+    }
+
+    .findings-input {
+      flex: 2;
+      min-width: 220px;
+    }
+
+    .btn-orange {
+      background: #ff5e1e;
+      color: #ffffff;
+      border: none;
+      border-radius: 14px;
+      padding: 12px 24px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-orange:hover {
+      opacity: 0.9;
+    }
+
+    .btn-orange:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    /* Activity Feed Section */
+    .section-title {
+      font-size: 17px;
+      font-weight: 600;
+      margin-top: 8px;
+      padding: 0 4px;
+    }
+
+    .feed-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .feed-item {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 18px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.02);
+      transition: transform 0.15s ease;
+    }
+
+    .feed-item:hover {
+      transform: translateY(-1px);
+    }
+
+    .feed-left {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .feed-ids {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1a1a1a;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .tag-trial {
+      font-size: 11px;
+      background: #f0eee8;
+      color: #615d56;
+      padding: 2px 8px;
+      border-radius: 8px;
+    }
+
+    .feed-findings {
+      font-size: 13px;
+      color: #7d7a75;
+      max-width: 520px;
+    }
+
+    .status-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .status-completed { background: #e6f6ec; color: #1e7e45; }
+    .status-pending   { background: #fff1e5; color: #d94b00; }
+    .status-rejected  { background: #fbeae9; color: #cf222e; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <div>
+        <h1>Clinical Trial Intake</h1>
+        <p>Live Ingestion & Orchestration Monitor</p>
+      </div>
+      <div class="badge-pill">Pipeline Active</div>
+    </div>
+
+    <div class="metrics-grid">
+      <div class="card">
+        <div class="card-label">Total Records</div>
+        <div class="card-value" id="totalCount">0</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Completed Trials</div>
+        <div class="card-value" id="completedCount">0</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Pending Reviews</div>
+        <div class="card-value" id="pendingCount">0</div>
+      </div>
+    </div>
+
+    <div class="card form-card">
+      <div class="form-title">Simulate Inbound Clinical Document</div>
+      <div class="form-row">
+        <input type="text" id="rawTrial" placeholder="Trial (e.g. ct-2026-onc)" value="ct-2026-onc">
+        <input type="text" id="rawPatient" placeholder="Patient (e.g. pt-7734)" value="pt-7734">
+        <input type="text" id="rawFindings" class="findings-input" placeholder="Clinical findings (min 10 chars)" value="Patient responded well to initial therapeutic dosage.">
+        <select id="statusSelect">
+          <option value="pending">Pending</option>
+          <option value="completed">Completed</option>
+        </select>
+        <button class="btn-orange" id="ingestBtn" onclick="sendMockWebhook()">Ingest</button>
+      </div>
+    </div>
+
+    <div class="section-title">Verified Records (PostgreSQL)</div>
+    <div class="feed-list" id="reportFeed">
+      <!-- Injected via JavaScript -->
+    </div>
+  </div>
+
+  <script>
+    async function loadReports() {
+      try {
+        const res = await fetch('/api/reports');
+        const result = await res.json();
+        const data = result.data || [];
+
+        document.getElementById('totalCount').innerText = result.count || data.length;
+        document.getElementById('completedCount').innerText = data.filter(d => d.status === 'COMPLETED').length;
+        document.getElementById('pendingCount').innerText = data.filter(d => d.status === 'PENDING').length;
+
+        const feed = document.getElementById('reportFeed');
+        feed.innerHTML = '';
+
+        if (data.length === 0) {
+          feed.innerHTML = '<div style="color: #8c8881; padding: 12px;">No clinical reports found in database.</div>';
+          return;
+        }
+
+        data.forEach(item => {
+          const statusClass = `status-${item.status.toLowerCase()}`;
+          const el = document.createElement('div');
+          el.className = 'feed-item';
+          el.innerHTML = `
+            <div class="feed-left">
+              <div class="feed-ids">
+                <span>${item.patient_id}</span>
+                <span class="tag-trial">${item.trial_id}</span>
+              </div>
+              <div class="feed-findings">${item.findings || 'No findings recorded.'}</div>
+            </div>
+            <div>
+              <span class="status-badge ${statusClass}">${item.status}</span>
+            </div>
+          `;
+          feed.appendChild(el);
+        });
+      } catch (err) {
+        console.error('Error loading reports:', err);
+      }
+    }
+
+    async function sendMockWebhook() {
+      const btn = document.getElementById('ingestBtn');
+      const findingsInput = document.getElementById('rawFindings').value.trim();
+
+      const payload = {
+        raw_trial: document.getElementById('rawTrial').value.trim(),
+        raw_patient: document.getElementById('rawPatient').value.trim(),
+        status: document.getElementById('statusSelect').value,
+        notes: findingsInput || "Patient evaluation protocol completed."
+      };
+
+      btn.disabled = true;
+      btn.innerText = "Ingesting...";
+
+      try {
+        const res = await fetch('/api/simulate-ingest', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+          const errData = await res.json();
+          alert('Ingest error: ' + (errData.error || 'Ensure n8n is running and listening.'));
+        } else {
+          setTimeout(loadReports, 1200);
+        }
+      } catch (e) {
+        alert('Network error communicating with backend.');
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Ingest";
+      }
+    }
+
+    loadReports();
+    setInterval(loadReports, 5000);
+  </script>
+</body>
+</html>
